@@ -154,7 +154,8 @@ Get-ChildItem -Path ($OS.SystemDrive + "\Users\") -Include @("[***].kdb[***]") -
 
 #Password File Name Detection
 Write-Output "`n[[***]] Searching for files with [***]pass[***] or [***]pw[***] on users drive"
-Get-ChildItem -Path ($OS.SystemDrive + "\users") -Include @("[***]pass[***]", "[***]pw[***]") -Recurse
+Get-ChildItem -Path ($OS.SystemDrive + "\users") -Include @("*pass*") -Recurse
+Get-ChildItem -Path ($OS.SystemDrive + "\users") -Include @("*pw*") -Recurse
 
 
 # RunMRU (Run command history)
