@@ -1,1 +1,0 @@
-get-aduser -filter * -properties passwordlastset, passwordneverexpires | sort passwordneverexpires | ft Name, passwordlastset, Passwordneverexpires
