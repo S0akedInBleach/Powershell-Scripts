@@ -1,0 +1,2 @@
+#adjust ports on left side of pipe, use $a for a range or changes to specific for targeted acan
+1..1024 | % {echo ((new-object Net.Sockets.TcpClient).Connect("10.0.0.$a",$_)) "Port $_ is open!"} 2>$null}
