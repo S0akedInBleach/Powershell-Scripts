@@ -111,13 +111,13 @@ net localgroup administrators
 Write-Output "[[***]] Checking current Session ID`n"
 query session
 <# commented out because I think the commnand qwinsta produces more clear results and tells session ID with carrot indicating which session you have
-(Get-Process -PID $pid).SessionID
+(Get-Process -PID $pid).SessionID#>
 
 
 # Local sessions
 
 Write-Output "`n`n[[***]] Checking user sessions`n"
-qwinsta#>
+qwinsta
 
 
 # Local user profiles
