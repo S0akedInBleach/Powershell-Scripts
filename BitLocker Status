@@ -1,0 +1,126 @@
+<# 
+ ------------------------------------------------ 
+ PowerShell script to query BitLocker status on 
+ a list of computers from Active Directory 
+  
+ File        : BitLocker_Scan.PS1 
+ Author        : David Webb 
+ Date        : 24/03/2018 
+ Version    : 1.0 
+  
+ Revision history: 
+ ----------------- 
+ 1.0 Initial version 
+ ------------------------------------------------ 
+#> 
+ 
+cls 
+ 
+# ----------------------- 
+# Define global variables 
+# ----------------------- 
+ 
+$ScanCount = 0 
+$UnprotectedCount = 0 
+$Date = Get-Date -Format yyyyMMdd 
+$StartDate = Get-Date -Format HH:mm:ss 
+$ReportFile = "C:\BitLocker_Status_$Date.csv" 
+$OutputArray = @() 
+$Recipients = "me@mydomain.com" 
+$Sender = "bitlocker@mydomain.com" 
+$SMTPServer = "smtp.mydomain.local" 
+$SearchBase = "OU=Computers,OU=CNI-VA,DC=centripetal,DC=co" 
+ 
+ 
+ 
+# ---------------------------------------- 
+# Build array from list of computers in AD 
+# ---------------------------------------- 
+ 
+Write-Host -NoNewline "- Gathering a list of Computers from Active Directory..." 
+Try 
+{ 
+   $Computers = Get-ADComputer -SearchBase $SearchBase -Filter * -Properties Name,Description | Sort-Object  
+   Write-Host -ForegroundColor Green "Success" 
+} 
+Catch 
+{ 
+   Write-Host -ForegroundColor Red "Failed ($_)" 
+} 
+ 
+ 
+ 
+# ------------------------------------------------- 
+# Use the Manage-BDE command to query each computer 
+# ------------------------------------------------- 
+ 
+Write-Host "- Querying BitLocker status..." 
+ForEach ($Computer in $Computers) 
+{ 
+   $Name = $Computer.Name 
+   $Description = $Computer.Description 
+   Write-Host -nonewline "  - $Name ($Description)..." 
+   $BDE = Manage-BDE -ComputerName $Computer.Name -Status C: 
+   If ($BDE -Like "*An error occurred while connecting*") {Write-Host -ForegroundColor Yellow "Unable to connect"; $Status = "Unable to connect"} 
+   If ($BDE -Like "*Protection On*") {Write-Host -ForegroundColor Green "Protected"; $Status = "Protected"} 
+   If ($BDE -Like "*Protection Off*") {Write-Host -ForegroundColor Red "Not potected!"; $Status = "Not protected"; $UnprotectedCount = $UnprotectedCount + 1} 
+   $ScanCount = $ScanCount +1 
+   $OutputArray += New-Object PsObject -Property @{ 
+   'Computer name' = $Computer.Name 
+   'Description' = $Computer.Description 
+   'BitLocker status' = $Status 
+   } 
+} 
+ 
+ 
+ 
+# ----------------- 
+# Generate a report 
+# ----------------- 
+ 
+Write-Host -NoNewline "- Saving report..." 
+Try 
+{ 
+   $OutputArray | Export-CSV -NoTypeInformation $ReportFile 
+   Write-Host -ForegroundColor Green "Success" 
+} 
+Catch 
+{ 
+   Write-Host -ForegroundColor Red "Failed ($_)" 
+} 
+ 
+ 
+ 
+# ------------------------- 
+# Send the report via email 
+# ------------------------- 
+ 
+#$Subject = "BitLocker status report" 
+#$Body = "The attached CSV file contains a list of workstations and their current BitLocker status" 
+ 
+#Write-Host -NoNewline "- Sending report via Email..." 
+#Try 
+#{ 
+#   Send-MailMessage -To $Recipients -From $Sender -Subject $Subject -Body $Body -SMTPServer $SMTPServer -Attachments $ReportFile 
+#   Write-Host -ForegroundColor Green "Success" 
+#} 
+#Catch 
+#{ 
+#   Write-Host -ForegroundColor Red "Failed ($_)" 
+#} 
+ 
+ 
+ 
+# ----------------------------------------- 
+# Display completion message and statistics 
+# ----------------------------------------- 
+ 
+$EndDate = Get-Date -Format HH:mm:ss 
+$Duration = New-TimeSpan $StartDate $EndDate 
+ 
+Write-Host "" 
+Write-Host "-------------------------------------------------------------" 
+Write-Host "Script complete.  Start time: $StartDate, End time: $EndDate" 
+Write-Host "Scanned $ScanCount computers. $UnprotectedCount are unprotected!" 
+Write-Host "-------------------------------------------------------------" 
+Write-Host ""
