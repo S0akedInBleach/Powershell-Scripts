@@ -3,7 +3,7 @@ get-aduser -filter * -properties passwordlastset, passwordneverexpires | sort pa
 
 
 #Checks for accounts specifically that have passwords that never expired and are enabled
-get-aduser -filter * -properties Name, PasswordNeverExpires | where {
+get-aduser -filter * -properties Name, PasswordNeverExpires,passwordlastset | where {
 $_.passwordNeverExpires -eq "true" } | where {
 $_.Enabled -eq "true"} |
- Select-Object DistinguishedName,Name,Enabled
+ Select-Object DistinguishedName,Name,Enabled,passwordlastset | sort passwordlastset
