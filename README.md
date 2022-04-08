@@ -34,3 +34,4 @@ Random Projects that I have created, or updated, or found useful from others. If
 30.	Outbound firewall rules - Shows status of local firewall rules
 
 
+**Bitlocker Check** - Simple script to check bitlocker status of domain connected PCs. 
