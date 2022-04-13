@@ -1,4 +1,6 @@
 # Powershell-Scripts
+Something on Github changes the code when pasted in, if something doesnt work right look for simple syntax errors like ' being replaced with @, please let me know of any changes i can make. 
+
 Random Projects that I have created, or updated, or found useful from others. If you find errors please let me know as I would like to maintain these to be viable in the field. 
 
 **Situational awareness** is a script to be ran on hosts either as blue team to identify any potential weaknesses in domain/host/user configs or from a red team perspective to gain knowledge of the landscape and find oppurtunities to escelate or move laterally. This code is quite long and can be segmented for more targeted results.  - https://github.com/S0akedInBleach/Powershell-Scripts/blob/main/situational_awareness.ps1
