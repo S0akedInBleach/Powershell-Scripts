@@ -1,4 +1,4 @@
-#simple
+#simple ping scanner 
 
 1..255 | % {ping -n 1 -w 800 10.8.5.$_ | select-string ttl}
 
