@@ -1,0 +1,8 @@
+#simple
+
+1..255 | % {ping -n 1 -w 800 10.8.5.$_ | select-string ttl}
+
+#25apr22-cb- need to figure out error handling, still send IP address if hostname lookup fails. 
+$ping = New-Object System.Net.Networkinformation.Ping
+1..10 | % {$ping.send("10.2.1.$_")} |  where{  $_.Status -eq "Success" } | % {Resolve-DnsName -Name  $_.Address} 
+
