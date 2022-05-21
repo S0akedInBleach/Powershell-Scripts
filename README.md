@@ -28,7 +28,7 @@ Random Projects that I have created, or updated, or found useful from others. If
 22.	DNS cache - https://docs.microsoft.com/en-us/powershell/module/dnsclient/get-dnsclientcache?view=windowsserver2022-ps
 23.	Shares - shows available shares 
 24.	Scheduled tasks - shows all scheduled tasks 
-25.	Domain Admins - unsure if needs RSAT -
+25.	Domain Admins - I think this needs RSAT to run - Tells interestin information about administrators like admin groups, admin users, and their last logon, pwchange, etc. might have errors, let me know if it needs work. 
 26.	Windows Event Forwarding - Checks if event logging is on and stats about them, including event forwarding
 27.	Windows Update settings - checks for wsus, latest updates, and registry key for location of update settings
 28.	Running processes - shows all local running processes
