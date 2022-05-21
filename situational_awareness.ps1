@@ -1,6 +1,7 @@
 
 <#
 
+21May22 - CB -- Updated Domain Admins to show last logon, password last set, and if the password expires. I am 99% sure at this point that it needs RSAT. This portion of the script you may have to modify Identity, however in my experience it pulled all admin groups. Need someone to verify. 
 7APR22 - CB -- Added notes for commands, removed/commented out the current session ID command, replaced "...Win32Reg_AddRemovePrograms...DisplayName" with "...Win32_Product...name", added AV names to running security products and expanded to check for windows defender, added [***]pass[***] or [***]pw[***] file search, finished runmru, added powershell command history, added netsh winhttp show proxy to proxy detection, fixed dns cache to display results       - want to expand on selecting what you want to choose to run and if output is possible - 
 
 Script will enumerate:
@@ -29,7 +30,7 @@ Script will enumerate:
     DNS cache - https://docs.microsoft.com/en-us/powershell/module/dnsclient/get-dnsclientcache?view=windowsserver2022-ps
     Shares - shows available shares 
     Scheduled tasks - shows all scheduled tasks 
-    Domain Admins - unsure if needs RSAT -
+    Domain Admins - Still needs validation but think RSAT is needed -
     Windows Event Forwarding - Checks if event logging is on and stats about them, including event forwarding
     Windows Update settings - checks for wsus, latest updates, and registry key for location of update settings
     Running processes - shows all local running processes
@@ -202,11 +203,15 @@ get-WmiObject -class Win32_Share
 Write-Output "[[***]] Checking scheduled tasks"
 schtasks /Query
 
-# Domain Admins
 
-Write-Output "`n[[***]] Checking domain admin groups and domain admins`n"
+# Domain Admins This portion of the script you may have to modify Identity, however in my experience it pulled all admin groups. Need someone to verify. 
+
+Write-Output "`n[[***]] Checking domain admin groups`n"
 Get-ADGroupMember -Identity Administrators | Select-Object name, samaccountname, objectClass,distinguishedName
-Get-ADGroupMember -Identity Administrators | get-adgroupmember | Select-Object name, samaccountname, objectClass,distinguishedName 
+Write-Output "`n[[***]] Checking Domain Admins`n"
+Get-ADGroupMember -Identity Administrators | get-adgroupmember | Select-Object name, samaccountname, objectClass,distinguishedName
+Write-Output "`n[[***]] Checking Domain Admin last login, and password status`n"
+Get-ADGroupMember -Identity Administrators | get-adgroupmember | Get-ADUser -properties passwordlastset, passwordneverexpires, lastlogondate | sort lastlogondate | ft -AutoSize Name, lastlogondate, passwordlastset, Passwordneverexpires
 <#I cannot debug this at this time instead adding in aternative method below, unsure of why its not working. -cb 7apr22
 Gwmi win32_groupuser |? {$_.groupcomponent like "[***]`"$('Domain Admins')`""} |%{
 
