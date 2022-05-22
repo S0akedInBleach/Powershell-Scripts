@@ -6,3 +6,5 @@
 $ping = New-Object System.Net.Networkinformation.Ping
 1..10 | % {$ping.send("10.2.1.$_")} |  where{  $_.Status -eq "Success" } | % {Resolve-DnsName -Name  $_.Address} 
 
+#Host OS detection based on TTL 
+1..254 | % { $a = $_; ping -n 1 -w $IPADDR$.$_ | select-string TTL | % {$ttl = $_.line.split("=")[3] -as [int]; if ($ttl -lt 65) {$os = "Linux"} ElseIf ($ttl -gt 64 -And $ttl -lt 129) {$os = "Windows" } else {$os = "Cisco"}; write-host "$IPADDR$.$a OS: $os"}}
