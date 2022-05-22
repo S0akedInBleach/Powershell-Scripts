@@ -1,4 +1,4 @@
-#simple ping scanner 
+###simple ping scannerS 
 
 1..255 | % {ping -n 1 -w 800 10.8.5.$_ | select-string ttl}
 
@@ -6,5 +6,14 @@
 $ping = New-Object System.Net.Networkinformation.Ping
 1..10 | % {$ping.send("10.2.1.$_")} |  where{  $_.Status -eq "Success" } | % {Resolve-DnsName -Name  $_.Address} 
 
-#Host OS detection based on TTL 
+###Host OS detection based on TTL 
 1..254 | % { $a = $_; ping -n 1 -w $IPADDR$.$_ | select-string TTL | % {$ttl = $_.line.split("=")[3] -as [int]; if ($ttl -lt 65) {$os = "Linux"} ElseIf ($ttl -gt 64 -And $ttl -lt 129) {$os = "Windows" } else {$os = "Cisco"}; write-host "$IPADDR$.$a OS: $os"}}
+
+#multiple subnet ranges
+10,20,30,50 | % { $a = $_; 1..255 | % { $b = $_; ping -n 1 -w 100 "10.0.$a.$b" | select-string TTL | % { if ($_ -match "ms") { $ttl = $_.line.split('=')[2] -as [int]; if ($ttl -lt 65) { $os = "Linux" } ElseIf ($ttl -gt 64 -And $ttl -lt 129) { $os = "Windows" } else { $os = "Cisco"}; write-host "10.0.$a.$b OS: $os"; echo "10.0.$a.$b" >> scan_results.txt }}} }
+
+#adjust ports on left side of pipe. use $a in the IP address for a range or changes to specific number for targeted scan. This script is slow.
+1..1024 | % {echo ((new-object Net.Sockets.TcpClient).Connect("10.0.0.$a",$_)) "Port $_ is open!"} 2>$null}
+
+#useful to get tdetails on open ports 
+Test-NetConnection -Port $ -ComputerName "$computername" -InformationLevel "Detailed"
