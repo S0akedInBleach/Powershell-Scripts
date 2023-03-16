@@ -17,7 +17,7 @@ if ($ip -eq $null) {
 
 $urls = @(
     "https://www.abuseipdb.com/check/$ip"
-    "https://www.virustotal.com/gui/ip-address/$ip/details
+    "https://www.virustotal.com/gui/ip-address/$ip/details"
     "https://exchange.xforce.ibmcloud.com/ip/$ip"
     "https://www.shodan.io/host/$ip"
     "https://otx.alienvault.com/indicator/ip/$ip"
