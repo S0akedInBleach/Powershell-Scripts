@@ -1,3 +1,6 @@
+#this script can be for IT or security personnel to investigate IP addresses
+
+
 #function for windows.forms to collect $ip address from user via gui
 function Get-InputBox {
     [CmdletBinding()]
@@ -53,7 +56,6 @@ $urls = @(
     "https://otx.alienvault.com/indicator/ip/$ip"
     "https://www.threatminer.org/host.php?q=$ip"
     "https://www.talosintelligence.com/reputation_center/lookup?search=$ip"
-    "https://www.malware-traffic-analysis.net/ip-address-lookup.php?ip=$ip"
     "https://viz.greynoise.io/query/?gnql=$ip"
     "https://www.criminalip.io/en/asset/report/$ip"
     "https://www.blocklist.de/en/view.html?ip=$ip"
@@ -61,9 +63,13 @@ $urls = @(
 
 )
 
-#open $urls into a single Microsoft Edge window
+#open $urls in single new window Microsoft Edge 
 
 $urls | % {Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList $_}
+
+
+
+
 
 #end of script
 
