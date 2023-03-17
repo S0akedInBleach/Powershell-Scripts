@@ -61,18 +61,9 @@ $urls = @(
 
 )
 
-#Function to open $urls into a Microsoft Edge window
+#open $urls into a single Microsoft Edge window
 
-function Open-Edge {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory=$true)]
-        [string]$urls
-    )
-    $edge = New-Object -ComObject Shell.Application
-    $edge.Open($urls)
-}
-
+$urls | % {Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList $_}
 
 #end of script
 
