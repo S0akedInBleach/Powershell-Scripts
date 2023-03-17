@@ -54,37 +54,29 @@ $urls = @(
     "https://exchange.xforce.ibmcloud.com/ip/$ip"
     "https://www.shodan.io/host/$ip"
     "https://otx.alienvault.com/indicator/ip/$ip"
-    "https://www.threatcrowd.org/ip.php?ip=$ip"
     "https://www.threatminer.org/host.php?q=$ip"
     "https://www.talosintelligence.com/reputation_center/lookup?search=$ip"
     "https://www.malware-traffic-analysis.net/ip-address-lookup.php?ip=$ip"
     "https://viz.greynoise.io/query/?gnql=$ip"
-    "https://www.malwaredomainlist.com/mdl.php?search=$ip"
-    "https://www.malwarebytes.com/threat-center/ip/$ip"
     "https://www.criminalip.io/en/asset/report/$ip"
     "https://www.blocklist.de/en/view.html?ip=$ip"
     "https://www.google.com/search?q=ip:$ip"
 
 )
 
-#Function to open URLs into a singnle new edge window 
+#Function to open URLs into a Microsoft Edge window
 
-function Open-URLsInNewWindow {
-    [CmdletBinding()]
+function Open-URL {
     param(
         [Parameter(Mandatory=$true)]
-        [string[]]$URLs
+        [string]$URL
     )
-    $window = New-Object -ComObject Shell.Application
-    $window.NewWindow()
-    $window.Windows() | Select-Object -Last 1 | ForEach-Object {
-        $window = $_
-        $window.Visible = $true
-        $window.LocationURL = $URLs[0]
-        $window.Navigate2($URLs[1..$($URLs.Length-1)])
-    }
+    $process = New-Object System.Diagnostics.ProcessStartInfo
+    $process.FileName = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+    $process.Arguments = $URL
+    $process.UseShellExecute = $true
+    [System.Diagnostics.Process]::Start($process)
 }
-
 
 #end of script
 
