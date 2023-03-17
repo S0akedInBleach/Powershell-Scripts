@@ -41,7 +41,7 @@ function Get-InputBox {
     $textbox.Text
 }
 
-$ip= Get-InputBox -Title "IP Lookup" -Prompt "Enter IP Address" -DefaultResponse "
+$ip= Get-InputBox -Title "IP Lookup" -Prompt "Enter IP Address" -DefaultResponse "Enter your IP"
 
 #use $ip to build URLs for lookup
 
@@ -67,12 +67,24 @@ $urls = @(
 
 )
 
-#open each URL in microsoft edge as tabs in a new window, and pause slightly for each tab to open
+#Function to open URLs into a singnle new edge window 
 
-$urls | % {
-    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "--new-window $_"
-    Start-Sleep -Seconds 1
+function Open-URLsInNewWindow {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string[]]$URLs
+    )
+    $window = New-Object -ComObject Shell.Application
+    $window.NewWindow()
+    $window.Windows() | Select-Object -Last 1 | ForEach-Object {
+        $window = $_
+        $window.Visible = $true
+        $window.LocationURL = $URLs[0]
+        $window.Navigate2($URLs[1..$($URLs.Length-1)])
+    }
 }
+
 
 #end of script
 
