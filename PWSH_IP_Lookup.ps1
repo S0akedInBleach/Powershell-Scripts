@@ -45,9 +45,12 @@ $ip= Get-InputBox -Title "IP Lookup" -Prompt "Enter IP Address" -DefaultResponse
 
 #use $ip to build URLs for lookup
 
+
+
+
 $urls = @(
     "https://www.abuseipdb.com/check/$ip"
-    "https://www.virustotal.com/gui/ip-address/$ip/details
+    "https://www.virustotal.com/gui/ip-address/$ip/details"
     "https://exchange.xforce.ibmcloud.com/ip/$ip"
     "https://www.shodan.io/host/$ip"
     "https://otx.alienvault.com/indicator/ip/$ip"
@@ -66,11 +69,18 @@ $urls = @(
 
 #open each URL in microsoft edge as tabs in a new window, and pause slightly for each tab to open
 
-foreach ($url in $urls) {
-    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "--new-window $url"
+$urls | % {
+    Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList "--new-window $_"
     Start-Sleep -Seconds 1
 }
 
-#close powershell script
+#end of script
 
-exit
+#to run the script, save it as a .ps1 file, and then run it from powershell with the following command:
+#ip_lookup.ps1
+#or
+#.\ip_lookup.ps1
+#or
+#powershell.exe -ExecutionPolicy Bypass -File ip_lookup.ps1
+#or
+#powershell.exe -ExecutionPolicy Bypass -File "C:\path\to\ip_lookup.ps1"
