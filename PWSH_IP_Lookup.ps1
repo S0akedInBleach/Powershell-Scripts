@@ -1,6 +1,4 @@
 #this script can be for IT or security personnel to investigate IP addresses
-
-
 #function for windows.forms to collect $ip address from user via gui
 function Get-InputBox {
     [CmdletBinding()]
@@ -65,11 +63,7 @@ $urls = @(
 
 #open $urls in single new window Microsoft Edge 
 
-$urls | % {Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList $_}
-
-
-
-
+Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized", ($urls -Join " "))
 
 #end of script
 
@@ -80,4 +74,4 @@ $urls | % {Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Applic
 #or
 #powershell.exe -ExecutionPolicy Bypass -File ip_lookup.ps1
 #or
-#powershell.exe -ExecutionPolicy Bypass -File "C:\path\to\ip_lookup.ps1"
+#powershell.exe -ExecutionPolicy Bypass -File "C:\path\to\ip_lookup.ps1
