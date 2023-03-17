@@ -43,10 +43,7 @@ function Get-InputBox {
 
 $ip= Get-InputBox -Title "IP Lookup" -Prompt "Enter IP Address" -DefaultResponse "Enter your IP"
 
-#use $ip to build URLs for lookup
-
-
-
+#use $ip to build $urls for lookup
 
 $urls = @(
     "https://www.abuseipdb.com/check/$ip"
@@ -64,19 +61,18 @@ $urls = @(
 
 )
 
-#Function to open URLs into a Microsoft Edge window
+#Function to open $urls into a Microsoft Edge window
 
-function Open-URL {
+function Open-Edge {
+    [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)]
-        [string]$URL
+        [string]$urls
     )
-    $process = New-Object System.Diagnostics.ProcessStartInfo
-    $process.FileName = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-    $process.Arguments = $URL
-    $process.UseShellExecute = $true
-    [System.Diagnostics.Process]::Start($process)
+    $edge = New-Object -ComObject Shell.Application
+    $edge.Open($urls)
 }
+
 
 #end of script
 
