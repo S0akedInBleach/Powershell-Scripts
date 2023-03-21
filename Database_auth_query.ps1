@@ -1,88 +1,37 @@
-#capture string as a base search term for codys.webpage.com
-$codys_the_man = Read-Host "Enter a string"
+#create an array of strings
+# Initialize an empty array to hold the strings
+[string[]]$strings = @()
 
-# List of top TLDs to check
-$tlds = @(".com", ".net", ".org", ".edu", ".gov", ".io", ".ai", ".co", ".me", ".ly", ".us", ".uk", ".au", ".ca", ".cn", ".jp", ".de", ".fr", ".es", ".it", ".nl", ".ch", ".se", ".no")
+# Read a string from user input and add it to the array
+[string]$inputString = Read-Host "Enter a string to add to the array"
+$strings += $inputString
 
+# Define an array of the top 10 TLDs
+[string[]]$tlds = @(".com", ".org", ".net", ".edu", ".gov", ".co", ".io", ".info", ".me", ".biz")
+
+# Add each TLD to the end of the string and add the modified string to the array
 foreach ($tld in $tlds) {
-    $domain = $codys_the_man + $tld
-    $wwwDomain = "www." + $domain
-    $url = "https://codys.webpage.com/Dashboard.aspx?D=0&k=$domain"
-    $wwwUrl = "https://codys.webpage.com/Dashboard.aspx?D=0&k=$wwwDomain"
+    # Add the TLD to the input string and add the resulting string to the array
+    $modifiedString = "$inputString$tld"
+    $strings += $modifiedString
 
-    #check for the inital string given first using Microsoft Edge
-    $page = Invoke-WebRequest -Uri $url -UseDefaultCredentials
-    $recordCount = $page.ParsedHtml.getElementById("MainContent_iblRecordCount")
-
-    if ($recordCount -ne $null -and $recordCount.InnerText -match "Record Count: (\d+)") {
-        $count = [int]$Matches[1]
-        Write-Host "Domain: $domain, Record Count: $count"
-        if ($count -gt 0) {
-            # Check for an existing browser session
-            $browserProcesses = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
-            if ($browserProcesses.Count -eq 0) {
-                # Launch the browser with the URL
-                Start-Process $url
-            }
-            else {
-                # Open the URL in the existing browser session
-                Start-Process -FilePath "msedge" -ArgumentList "--new-window $url"
-            }
-        }
-    }
-    
-    # Check if Record Count is greater than 0 for non-www domain using Microsoft Edge
-    $page = Invoke-WebRequest -Uri $url -UseDefaultCredentials
-    $recordCount = $page.ParsedHtml.getElementById("MainContent_iblRecordCount")
-
-    if ($recordCount -ne $null -and $recordCount.InnerText -match "Record Count: (\d+)") {
-        $count = [int]$Matches[1]
-        Write-Host "Domain: $domain, Record Count: $count"
-        if ($count -gt 0) {
-            # Check for an existing browser session
-            $browserProcesses = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
-            if ($browserProcesses.Count -eq 0) {
-                # Launch the browser with the URL
-                Start-Process $url
-            }
-            else {
-                # Open the URL in the existing browser session
-                Start-Process -FilePath "msedge" -ArgumentList "--new-window $url"
-            }
-        }
-    }
-
-    # Check if Record Count is greater than 0 for www domain using Microsoft Edge
-    $page = Invoke-WebRequest -Uri $wwwUrl -UseDefaultCredentials
-    $recordCount = $page.ParsedHtml.getElementById("MainContent_iblRecordCount")
-
-    if ($recordCount -ne $null -and $recordCount.InnerText -match "Record Count: (\d+)") {
-        $count = [int]$Matches[1]
-        Write-Host "Domain: $wwwDomain, Record Count: $count"
-        if ($count -gt 0) {
-            # Check for an existing browser session
-            $browserProcesses = Get-Process -Name "msedge" -ErrorAction SilentlyContinue
-            if ($browserProcesses.Count -eq 0) {
-                # Launch the browser with the URL
-                Start-Process $wwwUrl
-            }
-            else {
-                # Open the URL in the existing browser session
-                Start-Process -FilePath "msedge" -ArgumentList "--new-window $wwwUrl"
-            }
-        }
-    }
+    # Add the TLD to the input string with "www" prepended and add the resulting string to the array
+    $modifiedString = "www.$inputString$tld"
+    $strings += $modifiedString
 }
 
+# append srtings to url variable to use with codys.awesome.com/=$url
+
+# Create a new array to hold the URLs
+[string[]]$urls = @()
+
+# Loop through the strings and add the URLs to the array
+foreach ($string in $strings) {
+    $urls += "codys.awesome.com/$string"
+}
+
+# Open the URLs in Edge
 
 
 
-
-
-
-
-
-
-
-   
-            
+Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized", $urls)
