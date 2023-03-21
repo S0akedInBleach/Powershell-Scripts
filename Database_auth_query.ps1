@@ -1,4 +1,4 @@
-#create an array of strings
+# Create an array of strings
 # Initialize an empty array to hold the strings
 [string[]]$strings = @()
 
@@ -20,18 +20,32 @@ foreach ($tld in $tlds) {
     $strings += $modifiedString
 }
 
-# append srtings to url variable to use with codys.awesome.com/=$url
-
-# Create a new array to hold the URLs
+# Create an array of URLs
+# Initialize an empty array to hold the URLs
 [string[]]$urls = @()
 
 # Loop through the strings and add the URLs to the array
 foreach ($string in $strings) {
-    $urls += "codys.awesome.com/$string"
+    $url = "codys.awesome.com/$string"
+    $urls += $url
 }
 
-# Open the URLs in Edge
+# Open Edge and create the first tab
+$edgeProcess = Start-Process "msedge.exe" -PassThru
+Start-Sleep -Seconds 1
+$edgeTab = $edgeProcess | Select-Object -ExpandProperty MainWindowHandle
+[System.Windows.Forms.SendKeys]::SendWait("^t")
+Start-Sleep -Seconds 1
 
+# Open each URL as a new tab in the existing Edge window
+foreach ($url in $urls) {
+    [System.Windows.Forms.SendKeys]::SendWait($url)
+    [System.Windows.Forms.SendKeys]::SendWait("{Enter}")
+    Start-Sleep -Seconds 1
+    [System.Windows.Forms.SendKeys]::SendWait("^t")
+    Start-Sleep -Seconds 1
+}
 
-
-Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized", $urls)
+# Activate the first tab
+[System.Windows.Forms.SendKeys]::SendWait("^1")
+Start-Sleep -Seconds 1
