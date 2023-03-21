@@ -30,19 +30,9 @@ foreach ($string in $strings) {
     $urls += $url
 }
 
-# Open Edge and create the first tab
-$edgeProcess = Start-Process "msedge.exe" -PassThru
-Start-Sleep -Seconds 1
-$edgeTab = $edgeProcess | Select-Object -ExpandProperty MainWindowHandle
-[System.Windows.Forms.SendKeys]::SendWait("^t")
-Start-Sleep -Seconds 1
-
 # Open each URL as a new tab in the existing Edge window
 foreach ($url in $urls) {
-    [System.Windows.Forms.SendKeys]::SendWait($url)
-    [System.Windows.Forms.SendKeys]::SendWait("{Enter}")
-    Start-Sleep -Seconds 1
-    [System.Windows.Forms.SendKeys]::SendWait("^t")
+    Start-Process "msedge.exe" -ArgumentList ("-new-tab", $url)
     Start-Sleep -Seconds 1
 }
 
