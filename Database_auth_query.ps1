@@ -29,5 +29,5 @@ foreach ($string in $strings) {
     $urls += $url
 }
 
-# Open a new Edge window and add each URL as a new tab
-Start-Process "msedge.exe" -ArgumentList ("-new-window", $urls)
+$urlString = $urls -join " "
+Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized", $urlString)
