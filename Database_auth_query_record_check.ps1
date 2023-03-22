@@ -1,4 +1,5 @@
 # Create an array of strings
+# Initialize an empty array to hold the strings
 [string[]]$strings = @()
 
 # Read a string from user input and add it to the array
@@ -19,37 +20,34 @@ foreach ($tld in $tlds) {
     $strings += $modifiedString
 }
 
-# Create a new array to hold the URLs
+# Create an array to hold the URLs
 [string[]]$urls = @()
 
 # Loop through the strings and add the URLs to the array
 foreach ($string in $strings) {
-    $urls += "https://codys.awesome.com/$string"
+    $url = "codys.awesome.com/$string"
+    $urls += $url
 }
 
 # Open the URLs in Edge
-Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized")
+$edge = Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized", $urls) -PassThru
 
-# Wait for Edge to fully open
-Start-Sleep -Seconds 2
+# Wait for Edge to finish loading the pages
+Start-Sleep -Seconds 5
 
-# Loop through the URLs and check for the element with ID "MainContent_iblRecordCount"
-foreach ($url in $urls) {
-    # Navigate to the URL in the current tab
-    Add-Type -AssemblyName System.Windows.Forms
-    [System.Windows.Forms.SendKeys]::SendWait("^t$url{ENTER}")
+# Loop through the tabs and check the record count for each page
+foreach ($tab in $edge.Windows[0].Tabs) {
+    $page = $tab.WebView
 
-    # Wait for the page to fully load
-    Start-Sleep -Seconds 5
-
-    # Get the parsed HTML of the page
-    $page = (New-Object -ComObject "HTMLFile").IHTMLDocument3
-    $page.write((New-Object -ComObject "WinHttp.WinHttpRequest.5.1").Open('GET', $url, $false).ResponseBody)
-
-    # Check if the element with ID "MainContent_iblRecordCount" exists and has a value greater than 0
-    $recordCount = $page.getElementById("MainContent_iblRecordCount")
-    if ($recordCount -eq $null -or [int]$recordCount.innerText -eq 0) {
-        # If the element does not exist or has a value of 0, close the current tab
-        [System.Windows.Forms.SendKeys]::SendWait("^w")
+    # Check if Record Count is greater than 0
+    $recordCountElement = $page.Document.GetElementById("MainContent_lblRecordCount")
+    $recordCountText = $recordCountElement.InnerText
+    $recordCount = $recordCountText -replace "[^0-9]"
+    if ($recordCount -gt 0) {
+        Write-Host "Record Count for $($tab.Title) is greater than 0."
+    }
+    else {
+        Write-Host "Record Count for $($tab.Title) is 0. Closing tab."
+        $tab.Close()
     }
 }
