@@ -29,35 +29,19 @@ foreach ($string in $strings) {
     $urls += $url
 }
 
-# Open Edge and create a new window
-$edgeProcess = Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window")
-
-# Wait for the Edge window to finish loading
-Start-Sleep -Seconds 5
-
-# Loop through the URLs and open each one as a new tab in the existing Edge window
+# Loop through the URLs and open them in Edge if the record count is greater than 0
 foreach ($url in $urls) {
-    # Create a new tab in the existing Edge window
-    $tabProcess = Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-tab", $url)
+    # Make a web request to the URL and retrieve the content
+    $content = Invoke-WebRequest -Uri "https://$url"
 
-    # Wait for the page to finish loading
-    Start-Sleep -Seconds 5
+    # Select the element with the record count
+    $recordCount = $content.ParsedHtml.getElementById("MainContent_lblRecordCount")
 
-    # Check if Record Count is greater than 0
-    $page = New-Object -ComObject "InternetExplorer.Application"
-    $page.Visible = $false
-    $page.Navigate2($url)
-
-    while ($page.Busy) {
-        Start-Sleep -Milliseconds 100
+    # Check if the record count is greater than 0
+    if ($recordCount -and $recordCount.innerText -gt 0) {
+        # Open the URL in a new tab in Edge
+        $ie = New-Object -ComObject InternetExplorer.Application
+        $ie.Navigate2("https://$url", 0x1000)
+        $ie.Visible = $true
     }
-
-    $recordCount = $page.Document.getElementById("MainContent_lblRecordCount").InnerText -replace "Record Count: ", ""
-
-    # Close the tab if Record Count is 0
-    if ($recordCount -eq 0) {
-        $tabProcess.CloseMainWindow()
-    }
-
-    $page.Quit()
 }
