@@ -20,18 +20,14 @@ foreach ($tld in $tlds) {
     $strings += $modifiedString
 }
 
-# Create a string of URLs
-# Initialize an empty string to hold the URLs
-[string]$urlString = ""
+# Create an array to hold the URLs
+[string[]]$urls = @()
 
-# Loop through the strings and concatenate the URLs to the string
+# Loop through the strings and add the URLs to the array
 foreach ($string in $strings) {
     $url = "codys.awesome.com/$string"
-    $urlString += $url + ","
+    $urls += $url
 }
 
-# Remove the trailing comma from the URL string
-$urlString = $urlString.TrimEnd(",")
-
-# Open a new Edge window with all URLs as tabs
-Start-Process "msedge.exe" -ArgumentList ("-new-window", "-url", $urlString)
+# Open a new Edge window and add each URL as a new tab
+Start-Process "msedge.exe" -ArgumentList ("-new-window", $urls)
