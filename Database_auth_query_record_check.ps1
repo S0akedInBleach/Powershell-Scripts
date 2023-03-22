@@ -29,32 +29,21 @@ foreach ($string in $strings) {
     $urls += $url
 }
 
-# Create an empty array to hold the tabs
-$tabs = @()
+# Open Edge with the URLs in tabs
+$edgeProcess = Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized", $urls) -PassThru
 
-# Start Edge and create a new window
-$edgeProcess = Start-Process -FilePath "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" -ArgumentList ("-new-window", "-maximized")
+# Wait for Edge to finish loading the pages
+Start-Sleep -Seconds 10
 
-# Loop through the URLs and open each one in a new tab
-foreach ($url in $urls) {
-    # Open the URL in a new tab
-    $tab = $edgeProcess.MainWindow.Invoke({$edgeProcess.MainWindow.OpenNewTab()})
-    $tab.Navigate2($url)
-    
-    # Add the tab to the array
-    $tabs += $tab
-}
+# Loop through the tabs and close the ones with record count 0
+foreach ($tab in $edgeProcess.MainWindow.SubWindows) {
+    # Get the page from the tab
+    $page = $tab.GetWebPage()
 
-# Loop through the tabs and check if the record count is greater than 0
-foreach ($tab in $tabs) {
-    $page = $tab.Document
-    
     # Check if Record Count is greater than 0
     $recordCount = $page.ParsedHtml.getElementById("MainContent_lblRecordCount")
-    if ($recordCount -and $recordCount.innerText -gt 0) {
-        # Record Count is greater than 0, do nothing
-    } else {
-        # Record Count is 0 or not found, close the tab
+    if ($recordCount -and $recordCount.innerText -eq "Record Count: 0") {
+        # If record count is 0, close the tab
         $tab.Close()
     }
 }
