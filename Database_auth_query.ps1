@@ -30,12 +30,5 @@ foreach ($string in $strings) {
     $urls += $url
 }
 
-# Open each URL as a new tab in the existing Edge window
-foreach ($url in $urls) {
-    Start-Process "msedge.exe" -ArgumentList ("-new-tab", $url)
-    Start-Sleep -Seconds 1
-}
-
-# Activate the first tab
-[System.Windows.Forms.SendKeys]::SendWait("^1")
-Start-Sleep -Seconds 1
+# Open a new Edge window with all URLs as tabs
+Start-Process "msedge.exe" -ArgumentList ("-new-window", "-url", $urls)
